@@ -7,6 +7,12 @@
 # BlueJ files
 *.ctxt
 
+# gradle
+.gradle/
+
+# paper
+run/
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 

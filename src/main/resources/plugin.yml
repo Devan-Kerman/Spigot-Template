@@ -1,0 +1,5 @@
+name: Template
+version: @version@
+main: net.devtech.template.Template
+api-version: 1.13
+authors: [HalfOf2]
