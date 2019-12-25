@@ -1,5 +1,5 @@
 name: @pluginName@
 version: @version@
-main: net.devtech.@pluginname@.@pluginName@
+main: @group@.@pluginname@.@pluginName@
 api-version: 1.13
 authors: [HalfOf2]

@@ -48,12 +48,14 @@ task installPaper {
         def con = url.openConnection();
         con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0")
         IOGroovyMethods.withStream(con.getInputStream(), { i -> f.withOutputStream { it << i } })
+        // eula pls
         Runtime.getRuntime().exec("java -jar paperclip.jar", null, new File('run')).waitFor()
     }
 }
 
 tasks.jar.dependsOn tasks.shadowJar
 tasks.build.dependsOn tasks.validateMain
+
 init.doLast {
     installPaper
 }
@@ -64,6 +66,6 @@ import org.codehaus.groovy.runtime.IOGroovyMethods
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version, pluginName: pluginName, pluginname: pluginName.toLowerCase()]
+        filter ReplaceTokens, tokens: [version: version, group: group, pluginName: pluginName, pluginname: pluginName.toLowerCase()]
     }
 }
