@@ -1,4 +1,7 @@
-apply plugin: 'java'
+plugins {
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id 'java'
+}
 
 group = pluginGroup
 version = pluginVersion
@@ -19,10 +22,22 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compileOnly 'org.bukkit:bukkit:1.14.4-R0.1-SNAPSHOT'
+    compile "io.papermc:paperlib:1.0.2"
 }
 
-init.doLast {
-    installPaper
+shadowJar {
+    relocate 'io.papermc.lib', "${pluginGroup}.${pluginName}.paperlib"
+    destinationDir = 'run/plugins' as File
+}
+
+task validateMain {
+    println("validating main class")
+    char sep = File.separatorChar
+    sourceSets.main.java.srcDirs.forEach {
+        File file = new File(it, "${pluginGroup.replace('.' as char, sep)}$sep${pluginName.toLowerCase()}$sep${pluginName}.java")
+        if(!file.exists())
+            throw new IllegalArgumentException("Update your gradle.properties! main class must be pluginGroup.pluginname.PluginName!")
+    }
 }
 
 task installPaper {
@@ -32,16 +47,23 @@ task installPaper {
         def url = new URL("https://papermc.io/api/v1/paper/$mcVersion/$paper/download")
         def con = url.openConnection();
         con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0")
-        IOGroovyMethods.withStream(con.getInputStream(), {i -> f.withOutputStream{ it << i }})
+        IOGroovyMethods.withStream(con.getInputStream(), { i -> f.withOutputStream { it << i } })
         Runtime.getRuntime().exec("java -jar paperclip.jar", null, new File('run')).waitFor()
     }
 }
+
+tasks.jar.dependsOn tasks.shadowJar
+tasks.build.dependsOn tasks.validateMain
+init.doLast {
+    installPaper
+}
+
 
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.codehaus.groovy.runtime.IOGroovyMethods
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
+        filter ReplaceTokens, tokens: [version: version, pluginName: pluginName, pluginname: pluginName.toLowerCase()]
     }
 }
