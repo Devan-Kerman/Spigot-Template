@@ -66,6 +66,6 @@ import org.codehaus.groovy.runtime.IOGroovyMethods
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version, group: group, pluginName: pluginName, pluginname: pluginName.toLowerCase()]
+        filter ReplaceTokens, tokens: [version: version, group: pluginGroup, pluginName: pluginName, pluginname: pluginName.toLowerCase()]
     }
 }
